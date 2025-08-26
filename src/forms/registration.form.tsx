@@ -20,11 +20,11 @@ export default function RegistrationForm({onClose}: IProps)  {
         return emailRegex.test(email);
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log('Form submitted:', formData);
 
-        const result = registerUser(formData);
+        const result = await registerUser(formData);
         console.log(result);
 
         onClose();

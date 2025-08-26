@@ -11,7 +11,6 @@ import { useState } from "react";
 import { SignOutFunc } from "@/actions/sign.out";
 
 
-
 export const Logo = () => {
   return (
     <Image src='/logo.png' alt="logo" width={26} height={26} priority />
@@ -58,11 +57,15 @@ export default function Header() {
       </NavbarContent>
 
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
 
+
+        <NavbarItem className="hidden lg:flex">
           <Button as={Link} color="secondary" href="#" variant="flat" onPress={handleSignOut} >
             Logout
           </Button>
+        </NavbarItem>
+        
+        <NavbarItem className="hidden lg:flex">
           
           <Button as={Link} color="secondary" href="#" variant="flat" onPress={() => {setIsLoginOpen(true)}} >
             Login

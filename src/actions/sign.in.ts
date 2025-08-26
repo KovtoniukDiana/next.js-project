@@ -1,15 +1,16 @@
-import { signIn } from "@/auth/auth";
- 
+import { signIn } from "next-auth/react";
+
 export async function SignInWithCredentials(email: string, password: string) {
 
     try {
 
-        const result = await signIn("credentials", {    
-            redirect: false,
+        const result = await signIn("credentials", {
             email,
-            password
-        })
-        return result
+            password,
+            redirect: false,
+            });
+        
+        return result;
 
 
     }catch (error) {

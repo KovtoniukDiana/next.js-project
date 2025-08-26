@@ -17,7 +17,6 @@
     "@heroui/react": "^2.8.2",
     "@heroui/system": "^2.4.20",
     "@heroui/theme": "^2.4.20",
-    "@prisma/client": "^6.14.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
@@ -37,7 +36,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
-    "prisma": "^6.14.0",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.20.5",
     "typescript": "^5"

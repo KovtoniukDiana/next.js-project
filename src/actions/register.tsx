@@ -1,51 +1,30 @@
-'use server';
+"use server";
 
-import { IFormData } from "@/types/form-data";
-import prisma  from "@/utils/prisma";
+import prisma from "@/utils/prisma";
 import { saltAndHashPassword } from "@/utils/password";
 
+export async function registerUser(data: { email: string; password: string }) {
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
 
-export async function registerUser(formData: IFormData) {
-    const { email, password, confirmPassword } = formData;
-
-
-    if(password !== confirmPassword ) {
-        return {error: 'Passwords do not match'};
-    }
-    if(password.length < 6 ) {
-        return {error: 'Passwords has to have at least 6 characters'};
+    if (existingUser) {
+      return { error: "Користувач з таким email вже існує" };
     }
 
-    try {
+    const hashedPassword = await saltAndHashPassword(data.password);
 
-        const existingUser = await prisma.user.findUnique({
-            where: { email }
-        })
+    const user = await prisma.user.create({
+      data: {
+        email: data.email,
+        password: hashedPassword,
+      },
+    });
 
-        if (existingUser) {
-            return {error: 'User with this email already exists'};
-        }
-
-        const pwHash = await saltAndHashPassword(password);
-
-        const user = await prisma.user.create({
-            data: {
-                email: email,
-                password: pwHash
-            }
-        })
-
-        console.log('User created:', user);
-        return user;
-
-        
-    } catch (error) {
-
-        console.log('Error creating user:', error);
-        return (() => { throw new Error('Error creating user') })(); 
-
-    }
-
-    
-
+    return { success: true, user };
+  } catch (err) {
+    console.error("Помилка при реєстрації:", err);
+    return { error: "Не вдалося створити користувача" };
+  }
 }

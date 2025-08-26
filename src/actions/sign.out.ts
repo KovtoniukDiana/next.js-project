@@ -1,10 +1,12 @@
-import { signOut } from "@/auth/auth";
+
  
 export async function SignOutFunc() {
 
     try {
 
-        const result = await signOut({ redirect: false })
+        const result = await fetch("/api/auth/signOut", {
+            method: "POST",
+            });
         return result
 
 
