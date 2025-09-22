@@ -65,3 +65,57 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
+
+model Ingredient {
+  id            String @id @default(uuid())
+  name          String
+  category      Category
+  unit          Unit
+  pricePerUnit  Float?
+  description   String?
+  createdAt     DateTime @default(now()) @map("creatd_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  recipes       RecipeIngredient[]
+
+
+  @@map("ingredients")
+}
+
+enum Category {
+  VEGETABLES
+  FRUITS
+  MEAT
+  DAIRY
+  SEASONING
+  OTHER
+}
+
+enum Unit {
+  GRAMS
+  KILOGRAMS
+  LITERS
+  MILILITERS
+  PIECES
+}
+
+model Recipe {
+  id          String   @id @default(uuid())
+  name       String
+  description String
+  imageUrl   String?  @map("image_url")
+  ingredients RecipeIngredient[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id           String   @id @default(uuid())
+  recipeId     String  
+  ingredientId String  
+  quantity     Float
+
+  recipe       Recipe      @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id])
+
+  @@map("recipe_ingredients")
+}

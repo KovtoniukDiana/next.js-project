@@ -7,9 +7,10 @@ import { getUserFromDb } from "@/utils/user"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import bcryptjs from "bcryptjs"
 
+
  
 export const { handlers, signIn, signOut, auth } =  NextAuth({
-    adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       
@@ -21,7 +22,7 @@ export const { handlers, signIn, signOut, auth } =  NextAuth({
       authorize: async (credentials) => {
         try {
           if (!credentials) {
-            throw new Error("Пошта та пароль є обов'язковими.")
+            return null
           }
 
           const { email, password } = await signInSchema.parseAsync(credentials)
@@ -29,7 +30,8 @@ export const { handlers, signIn, signOut, auth } =  NextAuth({
           const user = await getUserFromDb(email)
  
           if (!user || !user.password) {
-            throw new Error("Невірний email або пароль.")
+            return null
+
           }
 
           const isPasswordValid = await bcryptjs.compare(
@@ -38,7 +40,7 @@ export const { handlers, signIn, signOut, auth } =  NextAuth({
           )
  
           if (!isPasswordValid) {
-            throw new Error("Невірний email або пароль.")
+            return null
           }
 
 
@@ -56,4 +58,18 @@ export const { handlers, signIn, signOut, auth } =  NextAuth({
       },
     }),
   ],
+
+  session: {
+    strategy: "jwt",
+    maxAge: 3600
+  }, 
+  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({token,  user}) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    }
+  }
 })

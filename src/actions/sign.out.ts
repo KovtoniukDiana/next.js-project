@@ -1,18 +1,15 @@
 
- 
+import { signOut } from "next-auth/react";
+import { useAuthStore } from "@/store/auth.store";
+
 export async function SignOutFunc() {
 
-    try {
-
-        const result = await fetch("/api/auth/signOut", {
-            method: "POST",
-            });
-        return result
-
-
-    }catch (error) {
-
-        console.log('Error during sign-out:', error);
-        throw error;
-    }
+  try {
+    await signOut({ redirect: false });
+    useAuthStore.getState().setAuthState("unauthenticated", null);
+    
+  } catch (error) {
+    console.error("Error during sign-out:", error);
+    throw error;
+  }
 }

@@ -9,6 +9,8 @@ import RegistrationMogal from "./modals/registration.mogal";
 import Login from "./modals/login.modal";
 import { useState } from "react";
 import { SignOutFunc } from "@/actions/sign.out";
+import { signIn } from "next-auth/react";
+import { useAuthStore } from "@/store/auth.store";
 
 
 export const Logo = () => {
@@ -19,18 +21,37 @@ export const Logo = () => {
 
 
 export default function Header() {
+
+  
+
+
+  const {isAuth, session, status, setAuthState}= useAuthStore();
+
+  
+
+
     const pathName = usePathname();
+
 
     const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
 
     const handleSignOut = async () => {
-      await SignOutFunc();
+      try {
+        await SignOutFunc();
+      } catch (error) {
+        console.log('error', error); 
+      }
+
+      setAuthState('unauthenticated', null);
     }
 
     const getNavItems = () => {
-        return siteConfig.navItems.map((el) => {
+        return siteConfig.navItems
+        .filter((item) => { if(item.href === '/ingredients') { return isAuth} return true}) // Яущо користувач не авторизувався, то в нав посилання на інгрідієнтс не буде
+        
+        .map((el) => {
             const isActive = pathName === el.href;
 
             return <NavbarItem key={el.href} >
@@ -38,8 +59,7 @@ export default function Header() {
                     {el.label}
                 </Link>
             </NavbarItem>
-        })
-        
+        })  
     }
 
   return (
@@ -56,16 +76,13 @@ export default function Header() {
         { getNavItems() }
       </NavbarContent>
 
-      <NavbarContent justify="end">
+      {status=== 'loading' ? <p>Завантаження...</p> : <NavbarContent justify="end">
 
+        {isAuth && <p>Привіт, {session.user?.email}</p>}
 
-        <NavbarItem className="hidden lg:flex">
-          <Button as={Link} color="secondary" href="#" variant="flat" onPress={handleSignOut} >
-            Logout
-          </Button>
-        </NavbarItem>
-        
-        <NavbarItem className="hidden lg:flex">
+        { !isAuth ? 
+          <>
+          <NavbarItem className="hidden lg:flex">
           
           <Button as={Link} color="secondary" href="#" variant="flat" onPress={() => {setIsLoginOpen(true)}} >
             Login
@@ -78,8 +95,19 @@ export default function Header() {
             Sign Up
           </Button>
 
-        </NavbarItem>
-      </NavbarContent>
+        </NavbarItem>  
+        </>
+        : 
+        <NavbarItem className="hidden lg:flex">
+          <Button as={Link} color="secondary" href="#" variant="flat" onPress={handleSignOut} >
+            Logout
+          </Button>
+        </NavbarItem>}
+
+        
+        
+        
+      </NavbarContent>}
 
       <RegistrationMogal isOpen={isRegistrationOpen} onClose={() => {setIsRegistrationOpen(false)}} />
       <Login isOpen={isLoginOpen} onClose={() => {setIsLoginOpen(false)}} />

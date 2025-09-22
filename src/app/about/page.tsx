@@ -1,6 +1,9 @@
+import PageContent from "@/components/common/page-content";
 
 export default function AboutPage() {
   return (
-    <div>AboutPage</div>
+    <div>
+      <PageContent />
+    </div>
   )
 }
